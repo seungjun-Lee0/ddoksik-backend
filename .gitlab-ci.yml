@@ -49,6 +49,7 @@ image_build:  # Dockerfile push
     when: always
     allow_failure: false
 
+
 get_kustomization:
   image: bitnami/git:latest
   stage: build
