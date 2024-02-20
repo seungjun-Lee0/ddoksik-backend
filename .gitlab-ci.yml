@@ -31,6 +31,7 @@ image_build:  # Dockerfile push
     - get_files
   before_script:
     - cd healthcare_backend
+    - ls
     - cp config.py ../
     - cp Dockerfile ../
     - cp requirements.txt ../
