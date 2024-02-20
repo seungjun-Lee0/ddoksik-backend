@@ -19,7 +19,7 @@ get_files:  # Dockerfile 및 설정 파일 가져오기
     paths:
       - healthcare_backend
   rules:
-  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+  - if: $CI_COMMIT_BRANCH == "user2"  
     when: always
     allow_failure: false
   
@@ -27,10 +27,6 @@ image_build:  # Dockerfile push
   image: docker:latest
   stage: build
   needs: [get_files]
-  rules:
-  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
-    when: always
-    allow_failure: false
   dependencies:
     - get_files
   before_script:
@@ -47,15 +43,15 @@ image_build:  # Dockerfile push
   artifacts:
     paths:
       - healthcare_backend
+  rules:
+  - if: $CI_COMMIT_BRANCH == "user2"  
+    when: always
+    allow_failure: false
 
 get_kustomization:
   image: bitnami/git:latest
   stage: build
   needs: [image_build]
-  rules:
-  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
-    when: always
-    allow_failure: false
   before_script:
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
@@ -64,15 +60,15 @@ get_kustomization:
   artifacts:
     paths:
       - healthcare_deploy
+  rules:
+  - if: $CI_COMMIT_BRANCH == "user2"  
+    when: always
+    allow_failure: false
 
 set_kustomization:
   image: gitlab.bangwol08.com:5050/bangwol08/healthcare_front/kustomize:latest
   stage: deploy
   needs: [get_kustomization]
-  rules:
-  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
-    when: always
-    allow_failure: false
   before_script:
     - cd healthcare_deploy
   script:
@@ -80,14 +76,14 @@ set_kustomization:
   artifacts:
     paths:
       - healthcare_deploy
+  rules:
+  - if: $CI_COMMIT_BRANCH == "user2"  
+    when: always
+    allow_failure: false
 
 push_kustomization:
   image: bitnami/git:latest
   stage: deploy
-  rules:
-  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
-    when: always
-    allow_failure: false
   before_script:
     - cd healthcare_deploy
     - git config --global user.name "gitlab runner"
@@ -97,7 +93,10 @@ push_kustomization:
     - git add kustomization.yaml
     - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
     - git push origin $BRANCHNAME
-
+  rules:
+  - if: $CI_COMMIT_BRANCH == "user2"  
+    when: always
+    allow_failure: false
   
 
 
