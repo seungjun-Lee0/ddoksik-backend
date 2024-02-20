@@ -19,7 +19,7 @@ get_files:  # Dockerfile 및 설정 파일 가져오기
     paths:
       - healthcare_backend
   rules:
-  - if: $CI_COMMIT_BRANCH == "user2"  
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
     when: always
     allow_failure: false
   
