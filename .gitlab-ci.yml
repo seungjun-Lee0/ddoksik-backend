@@ -1,0 +1,4 @@
+include: 
+- project: 'bangwol08/healthcare_backend'
+  ref: user2
+  file: '.gitlab-ci.yml'
