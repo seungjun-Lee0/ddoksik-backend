@@ -10,8 +10,10 @@ stages:
 get_files:  # Dockerfile 및 설정 파일 가져오기
   image: bitnami/git:latest
   stage: build
-  only: 
-    - $BRANCHNAME
+  rules:
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+    when: always
+    allow_failure: false
   before_script:
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
