@@ -44,6 +44,7 @@ image_build:  # Dockerfile push
     paths:
       - healthcare_backend
 
+
 get_kustomization:
   image: bitnami/git:latest
   stage: build
