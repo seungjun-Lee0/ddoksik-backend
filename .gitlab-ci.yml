@@ -1,6 +1,6 @@
 variables:
   DOCKER_ADDRESS: gitlab.bangwol08.com:5050
-  USERBRANCH: user2
+  BRANCHNAME: user2
   IMAGE_NAME: gitlab.bangwol08.com:5050/bangwol08/healthcare_backend/user:$CI_COMMIT_SHORT_SHA
 
 stages:
@@ -11,7 +11,7 @@ get_files:  # Dockerfile 및 설정 파일 가져오기
   image: bitnami/git:latest
   stage: build
   only: 
-    - $USERBRANCH
+    - $BRANCHNAME
   before_script:
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
@@ -25,8 +25,10 @@ image_build:  # Dockerfile push
   image: docker:latest
   stage: build
   needs: [get_files]
-  only: 
-    - $USERBRANCH
+  rules:
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+    when: always
+    allow_failure: false
   dependencies:
     - get_files
   before_script:
@@ -44,13 +46,14 @@ image_build:  # Dockerfile push
     paths:
       - healthcare_backend
 
-
 get_kustomization:
   image: bitnami/git:latest
   stage: build
   needs: [image_build]
-  only: 
-    - $USERBRANCH
+  rules:
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+    when: always
+    allow_failure: false
   before_script:
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
@@ -64,8 +67,10 @@ set_kustomization:
   image: gitlab.bangwol08.com:5050/bangwol08/healthcare_front/kustomize:latest
   stage: deploy
   needs: [get_kustomization]
-  only:
-    - $USERBRANCH
+  rules:
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+    when: always
+    allow_failure: false
   before_script:
     - cd healthcare_deploy
   script:
@@ -77,8 +82,10 @@ set_kustomization:
 push_kustomization:
   image: bitnami/git:latest
   stage: deploy
-  only:
-    - $USERBRANCH
+  rules:
+  - if: $CI_COMMIT_BRANCH == "$BRANCHNAME"  
+    when: always
+    allow_failure: false
   before_script:
     - cd healthcare_deploy
     - git config --global user.name "gitlab runner"
