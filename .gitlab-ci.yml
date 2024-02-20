@@ -94,12 +94,12 @@ push_kustomization:
     - cat kustomization.yaml
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
-    - git branch -M user
+    - git branch -M user-staging
   script:
     - git status
     - git add kustomization.yaml
     - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
-    - git push origin user
+    - git push origin user-staging
 
   rules:
   - if: $CI_COMMIT_BRANCH == "user2"  
