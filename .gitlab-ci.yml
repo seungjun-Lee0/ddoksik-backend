@@ -88,6 +88,7 @@ set_kustomization:
 push_kustomization:
   image: bitnami/git:latest
   stage: deploy
+  needs: [set_kustomization]
   before_script:
     - cd healthcare_deploy
     - cat kustomization.yaml
