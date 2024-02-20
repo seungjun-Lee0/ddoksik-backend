@@ -1,0 +1,99 @@
+variables:
+  DOCKER_ADDRESS: gitlab.bangwol08.com:5050
+  BRANCHNAME: user2
+  IMAGE_NAME: gitlab.bangwol08.com:5050/bangwol08/healthcare_backend/user:$CI_COMMIT_SHORT_SHA
+
+stages:
+  - build
+  - deploy
+
+get_files:  # Dockerfile 및 설정 파일 가져오기
+  image: bitnami/git:latest
+  stage: build
+  only: 
+    - $BRANCHNAME
+  before_script:
+    - git config --global user.name "gitlab runner"
+    - git config --global user.email "bangwol08@gmail.com"
+  script:
+    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.bangwol08.com/bangwol08/healthcare_backend.git
+  artifacts:
+    paths:
+      - healthcare_backend
+
+image_build:  # Dockerfile push
+  image: docker:latest
+  stage: build
+  needs: [get_files]
+  only: 
+    - $BRANCHNAME
+  dependencies:
+    - get_files
+  before_script:
+    - cd healthcare_backend
+    - cp config.py ../
+    - cp Dockerfile ../
+    - cp requirements.txt ../
+    - cp database.py ../
+    - cp models.py ../ 
+  script:
+    - docker login -u $TOKEN_USER -p $TOKEN_PASSWORD $DOCKER_ADDRESS
+    - docker build -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+  artifacts:
+    paths:
+      - healthcare_backend
+
+get_kustomization:
+  image: bitnami/git:latest
+  stage: build
+  needs: [image_build]
+  only: 
+    - $BRANCHNAME
+  before_script:
+    - git config --global user.name "gitlab runner"
+    - git config --global user.email "bangwol08@gmail.com"
+  script:
+    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.bangwol08.com/bangwol08/healthcare_deploy.git
+  artifacts:
+    paths:
+      - healthcare_deploy
+
+set_kustomization:
+  image: gitlab.bangwol08.com:5050/bangwol08/healthcare_front/kustomize:latest
+  stage: deploy
+  needs: [get_kustomization]
+  only:
+    - $BRANCHNAME
+  before_script:
+    - cd healthcare_deploy
+  script:
+    - kustomize edit set image user-image=$IMAGE_NAME
+  artifacts:
+    paths:
+      - healthcare_deploy
+
+push_kustomization:
+  image: bitnami/git:latest
+  stage: deploy
+  only:
+    - $BRANCHNAME
+  before_script:
+    - cd healthcare_deploy
+    - git config --global user.name "gitlab runner"
+    - git config --global user.email "bangwol08@gmail.com"
+    - git branch -M $BRANCHNAME
+  script:
+    - git add kustomization.yaml
+    - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
+    - git push origin $BRANCHNAME
+
+  
+
+
+
+
+
+
+
+    
