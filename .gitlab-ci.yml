@@ -37,6 +37,7 @@ image_build:  # Dockerfile push
     - cp requirements.txt ../
     - cp database.py ../
     - cp models.py ../ 
+    - cd ../
   script:
     - docker login -u $TOKEN_USER -p $TOKEN_PASSWORD $DOCKER_ADDRESS
     - docker build -t $IMAGE_NAME .
@@ -100,10 +101,6 @@ push_kustomization:
     when: always
     allow_failure: false
   
-
-
-
-
 
 
 
