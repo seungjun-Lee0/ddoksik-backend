@@ -76,6 +76,7 @@ set_kustomization:
     - cd healthcare_deploy
   script:
     - kustomize edit set image user-image=$IMAGE_NAME
+    - cat kustomization.yaml
   artifacts:
     paths:
       - healthcare_deploy
