@@ -91,11 +91,14 @@ push_kustomization:
     - cd healthcare_deploy
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
-    - git branch -M $BRANCHNAME
+    - git branch -M user
   script:
     - git add kustomization.yaml
     - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
-    - git push origin $BRANCHNAME
+    - git push origin user
+  artifacts:
+    paths:
+      - healthcare_deploy
   rules:
   - if: $CI_COMMIT_BRANCH == "user2"  
     when: always
