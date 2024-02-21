@@ -29,7 +29,8 @@ image_build:  # Dockerfile push
   dependencies:
     - get_files
   before_script:
-    - ls
+    - ls /user/
+    - ls 
     - cd healthcare_backend
     - ls
     - pwd
@@ -40,7 +41,6 @@ image_build:  # Dockerfile push
     - cp models.py ../
     - cd ../
     - ls
-    - pwd
   script:
     - docker login -u $TOKEN_USER -p $TOKEN_PASSWORD $DOCKER_ADDRESS
     - docker build -t $IMAGE_NAME .
