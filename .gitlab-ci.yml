@@ -22,6 +22,7 @@ get_files:  # Dockerfile 및 설정 파일 가져오기
     when: always
     allow_failure: false
   
+  
 image_build:  # Dockerfile push
   image: docker:latest
   stage: build
