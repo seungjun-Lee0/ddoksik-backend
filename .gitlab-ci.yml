@@ -32,12 +32,12 @@ image_build:  # Dockerfile push
   before_script:
     - cd healthcare_backend
     - ls
-    - cp config.py ../
-    - cp Dockerfile ../
-    - cp requirements.txt ../
-    - cp database.py ../
-    - cp models.py ../ 
-    - cd ../
+    - cp config.py ../user/
+    - cp Dockerfile ../user/
+    - cp requirements.txt ../user/
+    - cp database.py ../user/
+    - cp models.py ../user/
+    - cd ../user/
   script:
     - docker login -u $TOKEN_USER -p $TOKEN_PASSWORD $DOCKER_ADDRESS
     - docker build -t $IMAGE_NAME .
