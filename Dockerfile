@@ -28,7 +28,7 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 RUN pip install -U setuptools
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # add app
 COPY . .
