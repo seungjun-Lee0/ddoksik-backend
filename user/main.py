@@ -1,13 +1,15 @@
+import sys
+sys.path.append('/home/app/code')
 from fastapi import Depends, APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
-import sys 
+
 from . import services, schemas
 from .auth import verify_token
 from database import get_db
 from config import cognito_client, COGNITO_USERPOOL_ID
 
-sys.path.append('/home/app/code')
+
 app = FastAPI()
 router = APIRouter()
 
