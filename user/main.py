@@ -1,10 +1,10 @@
-from fastapi import Depends, APIRouter, FastAPI, HTTPException, status
+from fastapi import Depends, APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import services, schemas
 from .auth import verify_token
-from database import engine, get_db
+from database import get_db
 from config import cognito_client, COGNITO_USERPOOL_ID
 
 app = FastAPI()
