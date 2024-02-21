@@ -43,7 +43,7 @@ image_build:  # Dockerfile push
     - ls
   script:
     - docker login -u $TOKEN_USER -p $TOKEN_PASSWORD $DOCKER_ADDRESS
-    - docker build -t $IMAGE_NAME .
+    - docker build -t $IMAGE_NAME --no-cache .
     - docker push $IMAGE_NAME
   artifacts:
     paths:
