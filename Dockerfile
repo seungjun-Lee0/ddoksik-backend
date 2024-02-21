@@ -40,4 +40,4 @@ RUN chown -R app:app $APP_HOME
 USER app
 
 # run gunicorn
-CMD gunicorn --bind 0.0.0.0:5000 main:app -k uvicorn.workers.UvicornWorker
+CMD gunicorn --bind 0.0.0.0:8000 user.main:app -k uvicorn.workers.UvicornWorker
