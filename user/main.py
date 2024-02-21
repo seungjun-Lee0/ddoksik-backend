@@ -1,5 +1,6 @@
 import sys
 sys.path.append('/home/app/code')
+sys.path.append('/home/app/code/user')
 from fastapi import Depends, APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
