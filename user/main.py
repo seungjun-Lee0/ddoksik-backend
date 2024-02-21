@@ -11,6 +11,7 @@ sys.path.append('/home/app/code')
 app = FastAPI()
 router = APIRouter()
 
+
 # List of allowed origins (the front-end application URL)
 origins = [
     "http://localhost:3000",  # Adjust the port if your React app runs on a different one
