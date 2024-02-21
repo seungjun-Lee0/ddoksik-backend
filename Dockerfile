@@ -31,7 +31,7 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # add app
-COPY user .
+ADD user .
 COPY config.py user
 COPY database.py user
 COPY models.py user
