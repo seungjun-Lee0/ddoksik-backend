@@ -87,6 +87,7 @@ set_kustomization:
     when: always
     allow_failure: false
 
+
 push_kustomization:
   image: bitnami/git:latest
   stage: deploy
