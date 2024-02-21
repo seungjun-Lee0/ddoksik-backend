@@ -17,7 +17,7 @@ AWS_SECRET_ACCESS_KEY = "Jealu0o4jEClb8O0UmlkjJjgA4Yv+DZxE9KfZhE8"
 
 cognito_client = client(
     'cognito-idp',
-    region_name=os.getenv('ap-northeast-2'),
-    aws_access_key_id=os.getenv('AKIAUXEEDCLZCWQ2A7KV'),
-    aws_secret_access_key=os.getenv('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')
+    region_name='ap-northeast-2',
+    aws_access_key_id='AKIAUXEEDCLZCWQ2A7KV',
+    aws_secret_access_key='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'
 )
