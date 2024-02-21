@@ -29,7 +29,7 @@ image_build:  # Dockerfile push
   dependencies:
     - get_files
   before_script:
-    - ls /user/
+    - ls user
     - ls 
     - cd healthcare_backend
     - ls
