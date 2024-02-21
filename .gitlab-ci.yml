@@ -102,6 +102,7 @@ push_kustomization:
     - git status
     - git add kustomization.yaml
     - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
+
     - git push origin user-staging
 
   rules:
