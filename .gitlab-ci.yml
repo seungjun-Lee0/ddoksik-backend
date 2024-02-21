@@ -57,7 +57,7 @@ image_build:  # Dockerfile push
 
 get_kustomization:
   image: bitnami/git:latest
-  stage: build
+  stage: deploy
   needs: [image_build]
   before_script:
     - git config --global user.name "gitlab runner"
