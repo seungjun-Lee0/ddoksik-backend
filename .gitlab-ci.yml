@@ -2,6 +2,7 @@ variables:
   DOCKER_ADDRESS: gitlab.bangwol08.com:5050
   IMAGE_NAME: gitlab.bangwol08.com:5050/bangwol08/healthcare_backend/user:$CI_COMMIT_SHORT_SHA
 
+
 stages:
   - build
   - deploy
@@ -102,7 +103,7 @@ push_kustomization:
   script:
     - git status
     - git add kustomization.yaml
-    - git commit -m "change $BRANCHNAME ver $CI_COMMIT_SHORT_SHA"
+    - git commit -m "change user ver $CI_COMMIT_SHORT_SHA"
 
     - git push origin user-staging
 
