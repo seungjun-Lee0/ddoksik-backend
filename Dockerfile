@@ -31,7 +31,10 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # add app
-COPY . .
+COPY user .
+COPY config.py user
+COPY database.py user
+COPY models.py user
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
