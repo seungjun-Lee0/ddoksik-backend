@@ -16,7 +16,9 @@ router = APIRouter()
 
 # List of allowed origins (the front-end application URL)
 origins = [
-    "http://www.bangwol08.com",  # Adjust the port if your React app runs on a different one
+    "http://www.bangwol08.com",
+    "http://user-svc:8000",
+      # Adjust the port if your React app runs on a different one
     # You can add more origins if needed
 ]
 
