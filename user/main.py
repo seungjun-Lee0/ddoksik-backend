@@ -38,6 +38,10 @@ app.add_middleware(
 # async def startup_event():
 #     await create_tables()
 
+@app.get("api/v1/user/helloapi")
+async def helloapi():
+    return {"message": "hello api"}
+
 @app.get("api/v1/user/protected-route")
 async def protected_route(user=Depends(verify_token)):
     return {"message": "This is a protected route"}
