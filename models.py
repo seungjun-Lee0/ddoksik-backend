@@ -25,7 +25,7 @@ class MealPlan(Base):
 
     # Relationship to FoodItem through meal_plan_food_item association table
     user = relationship("UserHealthProfile", back_populates="meal_plans")
-    foods = relationship("FoodItem", secondary="meal_plan_food_item", lazy="joined")
+    foods = relationship("FoodItem", secondary="meal_plan_food_item")
 
 # Association table for the many-to-many relationship between MealPlan and FoodItem
 meal_plan_food_item = Table(
@@ -40,10 +40,9 @@ class UserHealthProfile(Base):
     username = Column(String, unique=True, index=True)
     diet_preference = Column(String)
     allergy_intolerance_type = Column(JSON)
-    birth_date = Column(DateTime)
     age = Column(Integer)
     gender = Column(String)
     height = Column(Float)
     weight = Column(Float)
-    target_weight = Column(Float)
+    activity_level = Column(Float)
     meal_plans = relationship("MealPlan", back_populates="user")
