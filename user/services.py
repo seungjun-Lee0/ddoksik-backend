@@ -1,3 +1,4 @@
+from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from . import schemas
@@ -14,12 +15,11 @@ async def create_user_health_profile(db: AsyncSession, health_profile: schemas.U
         username=health_profile.username,
         allergy_intolerance_type=health_profile.allergy_intolerance_type,
         diet_preference=health_profile.diet_preference,
-        birth_date=health_profile.birth_date,
         age=health_profile.age,
         gender=health_profile.gender,
         height=health_profile.height,
         weight=health_profile.weight,
-        target_weight=health_profile.target_weight,
+        activity_level=health_profile.activity_level,
     )
     db.add(db_health_profile)
     await db.commit()
