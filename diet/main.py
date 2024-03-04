@@ -64,7 +64,7 @@ async def get_meal_plans(username: str, db: AsyncSession = Depends(get_db), user
     meal_plans = await services.get_meal_plans_by_username(db, username)
     return meal_plans
 
-@app.get("/users/{username}/meal-plans/grouped", response_model=schemas.MealPlanGrouped)
+@app.get("/diets/{username}/meal-plans/grouped", response_model=schemas.MealPlanGrouped)
 async def get_meal_plans_grouped(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     grouped_meal_plans = await services.get_grouped_meal_plans(db, username)
     return {"grouped_meal_plans": grouped_meal_plans}
