@@ -37,10 +37,10 @@ image_build:  # Dockerfile push
     - ls
     - pwd
     - cp config.py ../
-    - cp Dockerfile ../
     - cp requirements.txt ../
     - cp database.py ../
     - cp models.py ../
+    - cp auth.py ../
     - cd ../
     - ls
   script:
