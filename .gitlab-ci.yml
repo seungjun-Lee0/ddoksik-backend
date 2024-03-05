@@ -1,6 +1,6 @@
 variables:
-  DOCKER_ADDRESS: gitlab.bangwol08.com:5050
-  IMAGE_NAME: gitlab.bangwol08.com:5050/bangwol08/healthcare_backend/user:$CI_COMMIT_SHORT_SHA
+  DOCKER_ADDRESS: gitlab.ddoksik2.site:5050
+  IMAGE_NAME: gitlab.ddoksik2.site:5050/bangwol08/healthcare_backend/user:$CI_COMMIT_SHORT_SHA
 
 
 stages:
@@ -14,7 +14,7 @@ get_files:  # Dockerfile 및 설정 파일 가져오기
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
   script:
-    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.bangwol08.com/bangwol08/healthcare_backend.git
+    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.ddoksik2.site/bangwol08/healthcare_backend.git
   artifacts:
     paths:
       - healthcare_backend
@@ -63,7 +63,7 @@ get_kustomization:
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
   script:
-    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.bangwol08.com/bangwol08/healthcare_deploy.git
+    - git clone -b main --single-branch https://$GITLAB_ID:$GITLAB_TOKEN@gitlab.ddoksik2.site/bangwol08/healthcare_deploy.git
   artifacts:
     paths:
       - healthcare_deploy
@@ -73,7 +73,7 @@ get_kustomization:
     allow_failure: false
 
 set_kustomization:
-  image: gitlab.bangwol08.com:5050/bangwol08/healthcare_front/kustomize:latest
+  image: gitlab.ddoksik2.site:5050/bangwol08/healthcare_front/kustomize:latest
   stage: deploy
   needs: [get_kustomization]
   before_script:
