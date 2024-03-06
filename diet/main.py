@@ -1,3 +1,7 @@
+import sys
+sys.path.append('/home/app/code')
+sys.path.append('/home/app/code/user')
+
 import httpx
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
