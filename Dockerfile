@@ -46,4 +46,4 @@ USER app
 EXPOSE 8000
 
 # run gunicorn
-CMD gunicorn --bind 0.0.0.0:8000 user.main:app -k uvicorn.workers.UvicornWorker
+CMD gunicorn --bind 0.0.0.0:8000 diet.main:app -k uvicorn.workers.UvicornWorker
