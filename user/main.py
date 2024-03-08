@@ -32,7 +32,7 @@ def init_jaeger_tracer(service_name):
     )
     return config.initialize_tracer()
 
-tracer = init_jaeger_tracer('hello-world')
+tracer = init_jaeger_tracer('user')
 
 # FastAPI middleware로 Jaeger 트레이싱 설정
 @app.middleware("http")
