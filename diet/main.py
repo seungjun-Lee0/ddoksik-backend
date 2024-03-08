@@ -2,6 +2,11 @@ import sys
 sys.path.append('/home/app/code')
 sys.path.append('/home/app/code/diet')
 
+from opentracing.ext import tags
+from opentracing.propagation import Format
+from opentelemetry.propagate import inject
+from jaeger_client import Config
+
 import httpx
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,6 +53,30 @@ async def log_request_data(request: Request, call_next):
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     return await log_request_data(request, call_next)
+
+# FastAPI middleware로 Jaeger 트레이싱 설정
+@app.middleware("http")
+async def add_span(request: Request, call_next):
+    if request.url.path == '/':
+        # Skip tracing for the root path
+        response = await call_next(request)
+        return response
+
+    #headers = dict(request.headers)
+    headers = {}
+    inject(headers)
+    span_ctx = tracer.extract(Format.HTTP_HEADERS, headers)
+    scope = tracer.start_active_span(
+        request.url.path,
+        child_of=span_ctx,
+        tags={tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER},
+    )
+
+    request.scope["span"] = scope.span
+    scope.close()
+    response = await call_next(request)
+    
+    return response
 
 @app.get("/api/v1/diet/get-nutrition-info/")
 async def get_nutrition_info(search_term: str, page_no: int = Query(default=1), num_of_rows: int = Query(default=10)):
