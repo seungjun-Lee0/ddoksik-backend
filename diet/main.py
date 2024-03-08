@@ -34,6 +34,22 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+def init_jaeger_tracer(service_name):
+    config = Config(
+        config={
+            'sampler': {
+                'type': 'const',
+                'param': 1,
+            },
+            'logging': True,
+        },
+        service_name=service_name,
+        validate=True,
+    )
+    return config.initialize_tracer()
+
+tracer = init_jaeger_tracer('diet') #서비스 이름별로 수정해줘야 함
+
 # async def create_tables():
 #     async with engine.begin() as conn:
 #         # Replace Base.metadata.create_all with your models' metadata
