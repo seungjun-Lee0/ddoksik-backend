@@ -10,8 +10,53 @@ from auth import verify_token
 from database import get_db
 from config import cognito_client, COGNITO_USERPOOL_ID
 
+from opentracing.ext import tags
+from opentracing.propagation import Format
+from opentelemetry.propagate import inject
+from jaeger_client import Config
+
 app = FastAPI()
 router = APIRouter()
+
+def init_jaeger_tracer(service_name):
+    config = Config(
+        config={
+            'sampler': {
+                'type': 'const',
+                'param': 1,
+            },
+            'logging': True,
+        },
+        service_name=service_name,
+        validate=True,
+    )
+    return config.initialize_tracer()
+
+tracer = init_jaeger_tracer('hello-world')
+
+# FastAPI middleware로 Jaeger 트레이싱 설정
+@app.middleware("http")
+async def add_span(request: Request, call_next):
+    if request.url.path == '/':
+        # Skip tracing for the root path
+        response = await call_next(request)
+        return response
+
+    #headers = dict(request.headers)
+    headers = {}
+    inject(headers)
+    span_ctx = tracer.extract(Format.HTTP_HEADERS, headers)
+    scope = tracer.start_active_span(
+        request.url.path,
+        child_of=span_ctx,
+        tags={tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER},
+    )
+
+    request.scope["span"] = scope.span
+    scope.close()
+    response = await call_next(request)
+    
+    return response
 
 # List of allowed origins (the front-end application URL)
 origins = [
