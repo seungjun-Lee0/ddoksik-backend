@@ -49,7 +49,7 @@ async def log_request_data(request: Request, call_next):
 async def add_process_time_header(request: Request, call_next):
     return await log_request_data(request, call_next)
 
-@app.get("/get-nutrition-info/")
+@app.get("/api/v1/diet/get-nutrition-info/")
 async def get_nutrition_info(search_term: str, page_no: int = Query(default=1), num_of_rows: int = Query(default=10)):
     # API Gateway를 통해 Lambda 함수 호출, 쿼리 파라미터 추가
     url = f"https://vxv6fyabuyipaimfzpsgwlkdru0qfbdq.lambda-url.ap-northeast-2.on.aws/?search_term={search_term}&pageNo={page_no}&numOfRows={num_of_rows}"
@@ -59,28 +59,28 @@ async def get_nutrition_info(search_term: str, page_no: int = Query(default=1), 
     except httpx.HTTPError as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.post("/diets/{username}/meal-plans", response_model= schemas.MealPlan)
+@app.post("/api/v1/diet/diets/{username}/meal-plans", response_model= schemas.MealPlan)
 async def create_meal_plan_endpoint(meal_plan: schemas.MealPlanCreate, db: AsyncSession = Depends(get_db)):
     return await services.create_or_update_meal_plan(db=db, meal_plan_create=meal_plan)
 
-@app.get("/diets/{username}/meal-plans")
+@app.get("/api/v1/diet/diets/{username}/meal-plans")
 async def get_meal_plans(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     meal_plans = await services.get_meal_plans_by_username(db, username)
     return meal_plans
 
-@app.get("/diets/{username}/meal-plans/grouped", response_model=schemas.MealPlanGrouped)
+@app.get("/api/v1/diet/diets/{username}/meal-plans/grouped", response_model=schemas.MealPlanGrouped)
 async def get_meal_plans_grouped(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     grouped_meal_plans = await services.get_grouped_meal_plans(db, username)
     return {"grouped_meal_plans": grouped_meal_plans}
 
-@app.put("/meal-plans/{meal_plan_id}", response_model=schemas.MealPlan)
+@app.put("/api/v1/diet/meal-plans/{meal_plan_id}", response_model=schemas.MealPlan)
 async def update_meal_plan_endpoint(meal_plan_id: int, meal_plan_data: schemas.MealPlanUpdate, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     updated_meal_plan = await services.update_meal_plan(db, meal_plan_id, meal_plan_data)
     if not updated_meal_plan:
         raise HTTPException(status_code=404, detail="Meal plan not found")
     return updated_meal_plan
 
-@app.delete("/meal-plans/{meal_plan_id}")
+@app.delete("/api/v1/diet/meal-plans/{meal_plan_id}")
 async def delete_meal_plan(meal_plan_id: int, db: AsyncSession = Depends(get_db)):
     success = await services.delete_meal_plan(db, meal_plan_id)
     if not success:
