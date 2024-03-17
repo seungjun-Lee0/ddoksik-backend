@@ -28,3 +28,12 @@ class UserHealthProfile(Base):
     weight = Column(Float)
     activity_level = Column(Float)
     meal_plans = relationship("MealPlan", back_populates="user")
+
+
+class RecommendedMealPlan(Base):
+    __tablename__ = 'recommended_meal_plans'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    diet_type = Column(String, nullable=False)
+    meal_type = Column(String, nullable=False)
+    allergy_intolerance_type = Column(JSON)  # 예: "Dairy,Nuts,Seafood"
+    food_info = Column(String)
