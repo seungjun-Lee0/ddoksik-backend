@@ -21,8 +21,7 @@ app = FastAPI()
 
 # List of allowed origins (the front-end application URL)
 origins = [
-    "http://localhost:3000",
-    "http://localhost:8000"
+    "https://www.ddoksik2.site/"
 ]
 
 # Add CORSMiddleware to the application instance
@@ -113,10 +112,24 @@ async def get_meal_plans(username: str, db: AsyncSession = Depends(get_db), user
     meal_plans = await services.get_meal_plans_by_username(db, username)
     return meal_plans
 
+@app.get("/api/v1/diet/diets/{username}/daily-nutrition-totals", response_model=dict)
+async def get_daily_nutrition_totals(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
+    daily_nutrition_totals = await services.calculate_daily_nutrition_totals(db, username)
+    return daily_nutrition_totals
+
 @app.get("/api/v1/diet/diets/{username}/meal-plans/grouped", response_model=schemas.MealPlanGrouped)
 async def get_meal_plans_grouped(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     grouped_meal_plans = await services.get_grouped_meal_plans(db, username)
     return {"grouped_meal_plans": grouped_meal_plans}
+
+@app.get("/api/v1/diet/diets/{username}/weekly-calories")
+async def get_weekly_calories(username: str, db: AsyncSession = Depends(get_db)):
+    recent_calories, previous_calories = await services.calculate_recent_and_previous_week_calories(db, username)
+    # 결과 반환
+    return {
+        "recent_week_calories": recent_calories,
+        "previous_week_calories": previous_calories
+    }
 
 @app.put("/api/v1/diet/meal-plans/{meal_plan_id}", response_model=schemas.MealPlan)
 async def update_meal_plan_endpoint(meal_plan_id: int, meal_plan_data: schemas.MealPlanUpdate, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):

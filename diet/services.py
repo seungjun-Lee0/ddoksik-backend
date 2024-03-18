@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -44,8 +44,6 @@ async def get_meal_plans_by_username(db: AsyncSession, username: str):
     result = await db.execute(select(MealPlan).filter(MealPlan.username == username))
     return result.scalars().all()
 
-
-
 async def get_grouped_meal_plans(db: AsyncSession, username: str):
     stmt = select(MealPlan).where(MealPlan.username == username)
     results = await db.execute(stmt)
@@ -77,6 +75,71 @@ async def get_grouped_meal_plans(db: AsyncSession, username: str):
 
     return sorted_grouped_data
 
+
+async def get_daily_meal_plans_by_username(db: AsyncSession, username: str):
+    today = date.today()
+    print(today)
+    result = await db.execute(select(MealPlan).filter(MealPlan.username == username, MealPlan.current_date == today))
+    return result.scalars().all()
+
+
+async def calculate_daily_nutrition_totals(db: AsyncSession, username: str):
+    # 오늘 등록된 음식들 가져오기
+    today_meal_plans = await get_daily_meal_plans_by_username(db, username)
+    # 초기화
+    total_calories = 0
+    total_carbohydrates = 0
+    total_protein = 0
+    total_fat = 0
+
+    # 음식들의 영양 성분 합산
+    for meal_plan in today_meal_plans:
+        nutr_cont1 = int(float(meal_plan.nutrients.get('NUTR_CONT1', 0)))
+        nutr_cont2 = int(float(meal_plan.nutrients.get('NUTR_CONT2', 0)))
+        nutr_cont3 = int(float(meal_plan.nutrients.get('NUTR_CONT3', 0)))
+        nutr_cont4 = int(float(meal_plan.nutrients.get('NUTR_CONT4', 0)))
+
+        total_calories += meal_plan.quantity * nutr_cont1
+        total_carbohydrates += meal_plan.quantity * nutr_cont2
+        total_protein += meal_plan.quantity * nutr_cont3
+        total_fat += meal_plan.quantity * nutr_cont4
+
+    return {
+        'my_total_calories': total_calories,
+        'my_total_carbohydrates': total_carbohydrates,
+        'my_total_protein': total_protein,
+        'my_total_fat': total_fat
+    }
+
+
+async def calculate_calories_for_period(db: AsyncSession, username: str, days_ago_start: int, days_ago_end: int):
+    end_date = date.today() - timedelta(days=days_ago_start)
+    start_date = date.today() - timedelta(days=days_ago_end)
+
+    # 시작 날짜와 종료 날짜 사이의 모든 날짜에 대해 칼로리 값을 0으로 초기화
+    total_calories_by_day = {start_date + timedelta(days=x): 0 for x in range((end_date - start_date).days + 1)}
+
+    result = await db.execute(select(MealPlan).filter(
+        MealPlan.username == username,
+        MealPlan.current_date >= start_date,
+        MealPlan.current_date <= end_date
+    ))
+    meal_plans = result.scalars().all()
+
+    for meal_plan in meal_plans:
+        day = meal_plan.current_date
+        calories = int(float(meal_plan.nutrients.get('NUTR_CONT1', 0))) * meal_plan.quantity
+        total_calories_by_day[day] += calories
+
+    return total_calories_by_day
+
+async def calculate_recent_and_previous_week_calories(db: AsyncSession, username: str):
+    # 지난 7일간의 칼로리 총합 계산 (오늘 포함)
+    recent_week_calories = await calculate_calories_for_period(db, username, 0, 6)
+    # 그 이전 7일간의 칼로리 총합 계산
+    previous_week_calories = await calculate_calories_for_period(db, username, 7, 13)
+
+    return recent_week_calories, previous_week_calories
 
 async def update_meal_plan(db: AsyncSession, meal_plan_id: int, meal_plan_update: MealPlanUpdate):
     # 식단 항목 조회
