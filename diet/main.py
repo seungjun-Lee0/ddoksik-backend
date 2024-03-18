@@ -1,7 +1,6 @@
 import sys
 sys.path.append('/home/app/code')
 sys.path.append('/home/app/code/diet')
-
 from opentracing.ext import tags
 from opentracing.propagation import Format
 from opentelemetry.propagate import inject
