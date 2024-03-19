@@ -97,13 +97,13 @@ push_kustomization:
     - cat kustomization.yaml
     - git config --global user.name "gitlab runner"
     - git config --global user.email "bangwol08@gmail.com"
-    - git branch -M diet-staging
+    - git branch -M staging
   script:
     - git status
     - git add kustomization.yaml
     - git commit -m "change diet ver $CI_COMMIT_SHORT_SHA"
 
-    - git push origin diet-staging
+    - git push origin staging
 
   rules:
   - if: $CI_COMMIT_BRANCH == "diet"  
