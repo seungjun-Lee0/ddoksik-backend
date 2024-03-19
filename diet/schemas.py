@@ -36,20 +36,5 @@ class MealPlanUpdate(BaseModel):  # 식단 업데이트를 위한 스키마, 선
     nutrients: Optional[dict] = None
     current_date: Optional[date] = None
 
-
-# class GroupedMealPlanItem(BaseModel):
-#     id: int
-#     desc_kor: str
-#     quantity: int
-#     nutrients: Dict[str, str]
-#
-# class MealTypeGroup(BaseModel):
-#     items: List[GroupedMealPlanItem]
-#
-# class MealPlanGroupedByDateAndType(BaseModel):
-#     date: date
-#     meal_type: str
-#     meal_plans: List[GroupedMealPlanItem]
-
 class MealPlanGrouped(BaseModel):
     grouped_meal_plans: Dict[date, Dict[str, Any]]
