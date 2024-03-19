@@ -17,3 +17,13 @@ class UserHealthProfileBase(BaseModel):
 
 class UserHealthProfileCreate(UserHealthProfileBase):
     pass
+
+class RecommendedMealPlanBase(BaseModel):
+    id: int
+    diet_type: str
+    meal_type: str
+    allergy_intolerance_type: List[str]
+    food_info: str
+
+    class Config:
+        from_attributes = True

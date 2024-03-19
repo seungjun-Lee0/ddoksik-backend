@@ -2,7 +2,7 @@ import sys
 sys.path.append('/home/app/code')
 sys.path.append('/home/app/code/user')
 
-from fastapi import Depends, APIRouter, FastAPI, HTTPException
+from fastapi import Depends, APIRouter, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,12 +11,57 @@ from auth import verify_token
 from database import get_db
 from config import cognito_client, COGNITO_USERPOOL_ID
 
+from opentracing.ext import tags
+from opentracing.propagation import Format
+from opentelemetry.propagate import inject
+from jaeger_client import Config
+
 app = FastAPI()
 router = APIRouter()
 
+def init_jaeger_tracer(service_name):
+    config = Config(
+        config={
+            'sampler': {
+                'type': 'const',
+                'param': 1,
+            },
+            'logging': True,
+        },
+        service_name=service_name,
+        validate=True,
+    )
+    return config.initialize_tracer()
+
+tracer = init_jaeger_tracer('user')
+
+# FastAPI middleware로 Jaeger 트레이싱 설정
+@app.middleware("http")
+async def add_span(request: Request, call_next):
+    if request.url.path == '/':
+        # Skip tracing for the root path
+        response = await call_next(request)
+        return response
+
+    #headers = dict(request.headers)
+    headers = {}
+    inject(headers)
+    span_ctx = tracer.extract(Format.HTTP_HEADERS, headers)
+    scope = tracer.start_active_span(
+        request.url.path,
+        child_of=span_ctx,
+        tags={tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER},
+    )
+
+    request.scope["span"] = scope.span
+    scope.close()
+    response = await call_next(request)
+    
+    return response
+
 # List of allowed origins (the front-end application URL)
 origins = [
-    "http://www.bangwol08.com",
+    "https://www.ddoksik2.site/",
     "http://user-svc:8000",
 ]
 
@@ -54,12 +99,32 @@ async def delete_user(username: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@app.get("/api/v1/user/users/{username}/daily-calories/", response_model=dict)
+async def get_daily_calories(username: str, db: AsyncSession = Depends(get_db)):
+    user_health_profile = await services.get_user_profile(db, username)
+    if user_health_profile is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    daily_calories = services.calculate_daily_calories(user_health_profile)
+    return daily_calories
+
 @app.get("/api/v1/user/users/{username}/health_profiles/", response_model=schemas.UserHealthProfileBase)
 async def read_user_profile(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
     db_user_profile = await services.get_user_profile(db, username=username)
     if db_user_profile is None:
         raise HTTPException(status_code=404, detail="User Profile not found")
     return db_user_profile
+
+@app.get("/api/v1/user/users/{username}/recommended_meal_plans/", response_model=dict)
+async def read_recommended_meal_plans(username: str, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
+    try:
+        recommendations = await services.get_recommended_meal_plans(db, username)
+        if recommendations:
+            return recommendations
+        else:
+            raise HTTPException(status_code=404, detail="User not found or no recommendations available")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/v1/user/users/{username}/health_profiles/", response_model=schemas.UserHealthProfileBase)
 async def create_health_profile_for_user(health_profile: schemas.UserHealthProfileCreate, db: AsyncSession = Depends(get_db), user=Depends(verify_token)):
