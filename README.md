@@ -156,5 +156,5 @@ Push to the branch (git push origin feature-name).
 Open a pull request.
 Ensure that your code follows the project's coding standards and passes all tests.
 
-License
+## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
